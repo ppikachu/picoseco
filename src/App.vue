@@ -56,10 +56,10 @@ const gltfRef = ref()
   const map = new TextureLoader().load( '/exp_baseColor.png' )
   map.encoding = sRGBEncoding
   const material = new MeshPhysicalMaterial({
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.1,
-    metalness: 0.5,
-    roughness: 0.5,
+    clearcoat: 1,
+    clearcoatRoughness: 0.2,
+    metalness: 0.4,
+    roughness: 0.8,
     color: 0xffffff,
     map: map,
   })
