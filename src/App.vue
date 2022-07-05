@@ -1,6 +1,6 @@
 <script setup>
   import { ref, onMounted, onBeforeMount } from "vue"
-  import { Clock, ACESFilmicToneMapping, Vector2, Vector3, sRGBEncoding, EquirectangularReflectionMapping, MeshPhysicalMaterial, TextureLoader, RepeatWrapping, UniformsUtils, ShaderMaterial, Fog } from "three"
+  import { Clock, ACESFilmicToneMapping, Vector2, Vector3, sRGBEncoding, EquirectangularReflectionMapping, UVMapping, MeshStandardMaterial, MeshPhysicalMaterial, TextureLoader, RepeatWrapping, UniformsUtils, ShaderMaterial, Fog, FogExp2 } from "three"
   import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader"
   import { SubsurfaceScatteringShader } from "three/examples/jsm/shaders/SubsurfaceScatteringShader.js"
   import {
@@ -15,6 +15,7 @@
   import Title from '../src/components/Title.vue'
 
   var light,
+  scene,
   gltfScene,
   camera,
   orbitCtrl,
@@ -35,7 +36,7 @@ const gltfRef = ref()
 
   onMounted(() => {
     renderer = rendererRef.value.renderer
-
+    scene = sceneRef.value.scene
     renderer.outputEncoding = sRGBEncoding
     renderer.toneMapping = ACESFilmicToneMapping
     renderer.toneMappingExposure = 1
@@ -51,22 +52,33 @@ const gltfRef = ref()
   gltfScene = gltf.scene
   const exprimidor = gltfScene.getObjectByName('posta_m')
 
-  /* // car paint
-  const normalMap = new TextureLoader().load( '/exp_normal_base.jpg' )
+  // car paint
+  const map = new TextureLoader().load( '/exp_baseColor.png' )
+  map.encoding = sRGBEncoding
   const material = new MeshPhysicalMaterial({
     clearcoat: 1.0,
     clearcoatRoughness: 0.1,
-    metalness: 0.2,
-    roughness: 0.7,
+    metalness: 0.5,
+    roughness: 0.5,
     color: 0xffffff,
-    normalMap: normalMap,
-    // normalScale: new Vector2( 1.0, 1.0 )
+    map: map,
+  })
+
+  /* // standard
+  const material = new MeshStandardMaterial({
+    color: 0x00ffff,
+    metalness: 0.2,
+    roughness: 0.2,
   }) */
 
-  // Subsurface Scattering
+  /* // Subsurface Scattering
   const loader = new TextureLoader()
   const imgTexture = loader.load( '/exp_ambient_occlusion.jpg' )
   const thicknessTexture = loader.load( '/exp_thickness.jpg' )
+  // thicknessTexture.mapping = UVMapping
+  thicknessTexture.flipX = true
+  thicknessTexture.flipY = true
+
   imgTexture.wrapS = imgTexture.wrapT = RepeatWrapping
 
   const shader = SubsurfaceScatteringShader
@@ -91,9 +103,7 @@ const gltfRef = ref()
     fragmentShader: shader.fragmentShader,
     lights: true
   } )
-  material.extensions.derivatives = true
-
-  // exprimidor.material = material
+  material.extensions.derivatives = true */
 
   // self shadowing
   // exprimidor.receiveShadow = true
@@ -102,15 +112,20 @@ const gltfRef = ref()
   // environment
   const hdrimgUrl = '/Studio_80s.hdr'
   const scene = sceneRef.value.scene
-	// scene.fog = new Fog( 0x333333, 10, 15 )
+	scene.fog = new Fog( 0xddeeee, 0.45, 0.8 )
+  // scene.fog = new FogExp2( 0xddeeee, 2 )
   const loadedTexture = new RGBELoader().load(hdrimgUrl, () => {
     const envMap = loadedTexture
     scene.environment = envMap
     scene.environment.mapping = EquirectangularReflectionMapping
     exprimidor.material.envMap = envMap
+    // exprimidor.material.mapping = UVMapping
+    // exprimidor.material.map.flipY = true
+    exprimidor.material.needsUpdate = true
   })
 
-  console.log(scene, exprimidor)
+  exprimidor.material = material
+  // console.log(scene, exprimidor)
 
   animate()
 }
@@ -127,14 +142,14 @@ function animate() {
 <template>
   <div class="h-screen flex items-center" >
      <Title>
-      <template #body>picoseco</template>
+      <!-- <template #body>picoseco</template> -->
     </Title>
 
-    <Renderer ref="rendererRef" antialias shadow resize :orbit-ctrl="{ enableDamping: true, dampingFactor: 0.05 }">
+    <Renderer ref="rendererRef" antialias shadow resize pointer :orbit-ctrl="{ enableDamping: true, dampingFactor: 0.05 }">
       <Camera ref="cameraRef" :position="{ x: -0.4, y: 0.4, z: 0.3 }" />
       <Scene ref="sceneRef" background="#dee">
         <!-- <PointLight helper cast-shadow ref="light1" color="#fff" :intensity="2" :shadow-map-size="{ width:1024, height:1024 }" :position="{ x: 1, y: 5, z: 5 }" /> -->
-        <PointLight helper ref="light1" color="#fff" :intensity="2" cast-shadow :shadow-map-size="{ width:1024, height:1024 }" :position="{ x: 1, y: 1, z: -5 }" />
+        <PointLight helper ref="light1" color="#fff" :intensity="2" cast-shadow :shadow-map-size="{ width:2048, height:2048 }" :position="{ x: 1, y: 1, z: -5 }" />
 
         <GltfModel
           ref="gltfRef"
