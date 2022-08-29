@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
   import { ref, onMounted, onBeforeMount } from "vue"
   import { Clock, ACESFilmicToneMapping, Vector2, Vector3, sRGBEncoding, EquirectangularReflectionMapping, UVMapping, MeshStandardMaterial, MeshPhysicalMaterial, TextureLoader, RepeatWrapping, UniformsUtils, ShaderMaterial, Fog, FogExp2 } from "three"
   import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader"
@@ -12,6 +12,7 @@
     StandardMaterial,
     EffectPass,
   } from 'troisjs'
+  import gsap from 'gsap'
   import Title from '../src/components/Title.vue'
 
   var light,
@@ -27,6 +28,7 @@ const rendererRef = ref()
 const sceneRef = ref()
 const cameraRef = ref()
 const gltfRef = ref()
+const loadedModels = ref(false)
 
   onBeforeMount(() => {
     console.clear()
@@ -71,11 +73,19 @@ const gltfRef = ref()
     scene.environment.mapping = EquirectangularReflectionMapping
     exprimidor.material.envMap = envMap
     exprimidor.material.needsUpdate = true
+    //fadein
+    fadeScene(2)
   })
 
   exprimidor.material = material
 
   animate()
+}
+
+function fadeScene(time:number) {
+  gsap.to( document.getElementById('fader'), { opacity: 0, duration: time, onComplete: ()=> {
+    loadedModels.value = true
+  } })
 }
 
 function animate() {
@@ -104,5 +114,9 @@ function animate() {
 
       </Scene>
     </Renderer>
+    
+    <!--fadeScene-->
+    <div id="fader" class="absolute top-0 w-full h-screen flex justify-center items-center bg-gray-100" ></div>
+
   </div>
 </template>
