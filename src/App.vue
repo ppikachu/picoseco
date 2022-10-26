@@ -9,7 +9,7 @@ import {
   Renderer,
   Scene,
 } from 'troisjs'
-import Title from '../src/components/Title.vue'
+import Logo from '../src/components/Logo.vue'
 
 var gltfScene, renderer, scene
 var clock = new Clock()
@@ -78,7 +78,7 @@ function animate() {
 
 <template>
   <div class="h-screen flex items-center" >
-     <Title />
+     <Logo />
 
     <Renderer ref="rendererRef" antialias shadow resize pointer :orbit-ctrl="{ enableDamping: true, dampingFactor: 0.05 }">
       <Camera ref="cameraRef" :position="{ x: -0.4, y: 0.4, z: 0.3 }" />

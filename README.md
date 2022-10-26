@@ -1,4 +1,4 @@
-# Proposal of landing page
+# Web experience
 (WIP)
 
-![picoseco](https://picoseco.com/picoseco.png)
+![picoseco](/public/picoseco.png)

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="absolute w-full h-full flex flex-col items-end justify-start tracking-widest modal-container text-slate-400"
+    class="absolute w-full h-full flex flex-col items-end"
   >
     <div class="p-24">
       <svg width="158" height="18" viewBox="0 0 158 18" fill="none" xmlns="http://www.w3.org/2000/svg">
